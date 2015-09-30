@@ -21,7 +21,7 @@ import com.hazelcast.client.SimpleClient;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.IMap;
 import com.hazelcast.instance.TestUtil;
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.map.impl.MapKeySet;
 import com.hazelcast.map.impl.MapValueCollection;
 import com.hazelcast.map.impl.client.MapContainsKeyRequest;
@@ -337,17 +337,17 @@ public class MapClientRequestTest extends ClientTestSupport {
         MapExecuteWithPredicateRequest request = new MapExecuteWithPredicateRequest(map.getName(), entryProcessor, p);
         final SimpleClient client = getClient();
         client.send(request);
-        MapEntries mapEntries = (MapEntries) client.receive();
+        MapEntrySet entrySet = (MapEntrySet) client.receive();
 
         Map<Integer, Employee> result = new HashMap<Integer, Employee>();
-        for (Map.Entry<Data, Data> dataEntry : mapEntries) {
+        for (Map.Entry<Data, Data> dataEntry : entrySet.getEntrySet()) {
             final Data keyData = dataEntry.getKey();
             final Data valueData = dataEntry.getValue();
             Integer key = (Integer) TestUtil.toObject(keyData);
             result.put(key, (Employee) TestUtil.toObject(valueData));
         }
 
-        assertEquals(5, mapEntries.size());
+        assertEquals(5, entrySet.getEntrySet().size());
 
         for (int i = 0; i < 5; i++) {
             assertEquals(SampleObjects.State.STATE2, ((Employee) map.get(i)).getState());

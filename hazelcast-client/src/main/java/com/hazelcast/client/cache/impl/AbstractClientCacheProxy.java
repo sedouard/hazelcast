@@ -29,7 +29,7 @@ import com.hazelcast.client.spi.impl.ClientInvocationFuture;
 import com.hazelcast.config.CacheConfig;
 import com.hazelcast.core.ExecutionCallback;
 import com.hazelcast.core.ICompletableFuture;
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.nio.serialization.Data;
 import com.hazelcast.util.ExceptionUtil;
 import com.hazelcast.util.executor.DelegatingFuture;
@@ -219,8 +219,9 @@ abstract class AbstractClientCacheProxy<K, V>
         }
         Map<K, V> result = getAllFromNearCache(keySet);
         final CacheGetAllRequest request = new CacheGetAllRequest(nameWithPrefix, keySet, expiryPolicy);
-        final MapEntries mapEntries = invoke(request);
-        for (Map.Entry<Data, Data> dataEntry : mapEntries) {
+        final MapEntrySet mapEntrySet = invoke(request);
+        final Set<Map.Entry<Data, Data>> entrySet = mapEntrySet.getEntrySet();
+        for (Map.Entry<Data, Data> dataEntry : entrySet) {
             final Data keyData = dataEntry.getKey();
             final Data valueData = dataEntry.getValue();
             final K key = toObject(keyData);

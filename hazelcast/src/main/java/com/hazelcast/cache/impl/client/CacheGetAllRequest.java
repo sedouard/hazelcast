@@ -21,7 +21,7 @@ import com.hazelcast.cache.impl.CachePortableHook;
 import com.hazelcast.cache.impl.operation.CacheGetAllOperationFactory;
 import com.hazelcast.client.impl.client.RetryableRequest;
 import com.hazelcast.client.impl.client.SecureRequest;
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.Data;
@@ -78,10 +78,11 @@ public class CacheGetAllRequest
 
     @Override
     protected Object reduce(Map<Integer, Object> map) {
-        MapEntries resultSet = new MapEntries();
+        MapEntrySet resultSet = new MapEntrySet();
         for (Map.Entry<Integer, Object> entry : map.entrySet()) {
-            MapEntries mapEntries = serializationService.toObject(entry.getValue());
-            for (Map.Entry<Data, Data> dataEntry : mapEntries) {
+            MapEntrySet mapEntrySet = (MapEntrySet) serializationService.toObject(entry.getValue());
+            Set<Map.Entry<Data, Data>> entrySet = mapEntrySet.getEntrySet();
+            for (Map.Entry<Data, Data> dataEntry : entrySet) {
                 resultSet.add(dataEntry);
             }
         }

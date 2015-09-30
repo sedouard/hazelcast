@@ -20,7 +20,7 @@ import com.hazelcast.client.impl.protocol.ClientMessage;
 import com.hazelcast.client.impl.protocol.codec.MapPutAllCodec;
 import com.hazelcast.client.impl.protocol.task.AbstractPartitionMessageTask;
 import com.hazelcast.instance.Node;
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.map.impl.MapService;
 import com.hazelcast.map.impl.operation.PutAllOperation;
 import com.hazelcast.nio.Connection;
@@ -41,11 +41,11 @@ public class MapPutAllMessageTask
 
     @Override
     protected Operation prepareOperation() {
-        final MapEntries mapEntries = new MapEntries();
+        final MapEntrySet mapEntrySet = new MapEntrySet();
         for (Map.Entry<Data, Data> entry : parameters.entries.entrySet()) {
-            mapEntries.add(entry.getKey(), entry.getValue());
+            mapEntrySet.add(entry.getKey(), entry.getValue());
         }
-        PutAllOperation operation = new PutAllOperation(parameters.name, mapEntries);
+        PutAllOperation operation = new PutAllOperation(parameters.name, mapEntrySet);
         return operation;
     }
 

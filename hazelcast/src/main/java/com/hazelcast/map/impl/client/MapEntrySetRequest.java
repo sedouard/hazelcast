@@ -19,7 +19,7 @@ package com.hazelcast.map.impl.client;
 import com.hazelcast.client.impl.client.AllPartitionsClientRequest;
 import com.hazelcast.client.impl.client.RetryableRequest;
 import com.hazelcast.client.impl.client.SecureRequest;
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.map.impl.MapPortableHook;
 import com.hazelcast.map.impl.MapService;
 import com.hazelcast.map.impl.operation.EntrySetOperationFactory;
@@ -30,7 +30,6 @@ import com.hazelcast.nio.serialization.PortableWriter;
 import com.hazelcast.security.permission.ActionConstants;
 import com.hazelcast.security.permission.MapPermission;
 import com.hazelcast.spi.OperationFactory;
-
 import java.io.IOException;
 import java.security.Permission;
 import java.util.HashSet;
@@ -55,15 +54,12 @@ public class MapEntrySetRequest extends AllPartitionsClientRequest implements Po
 
     @Override
     protected Object reduce(Map<Integer, Object> map) {
-        // todo: is this set really needed? Can we encounter duplicate key/value's? If not, then switching to a list
-        // is probably a lot faster
         Set<Map.Entry<Data, Data>> entrySet = new HashSet<Map.Entry<Data, Data>>();
         MapService service = getService();
         for (Object result : map.values()) {
-            MapEntries mapEntries = (MapEntries) service.getMapServiceContext().toObject(result);
-            entrySet.addAll(mapEntries.entries());
+            entrySet.addAll(((MapEntrySet) service.getMapServiceContext().toObject(result)).getEntrySet());
         }
-        return new MapEntries(entrySet);
+        return new MapEntrySet(entrySet);
     }
 
     public String getServiceName() {

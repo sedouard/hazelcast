@@ -18,7 +18,7 @@ package com.hazelcast.map.impl.recordstore;
 
 import com.hazelcast.core.EntryView;
 import com.hazelcast.map.impl.MapContainer;
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.map.impl.mapstore.MapDataStore;
 import com.hazelcast.map.impl.record.Record;
 import com.hazelcast.map.merge.MapMergePolicy;
@@ -94,7 +94,7 @@ public interface RecordStore {
      */
     Data readBackupData(Data key);
 
-    MapEntries getAll(Set<Data> keySet);
+    MapEntrySet getAll(Set<Data> keySet);
 
     boolean containsKey(Data dataKey);
 

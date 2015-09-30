@@ -18,7 +18,7 @@ package com.hazelcast.map.impl.client;
 
 import com.hazelcast.client.impl.client.AllPartitionsClientRequest;
 import com.hazelcast.map.EntryProcessor;
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.map.impl.MapPortableHook;
 import com.hazelcast.map.impl.MapService;
 import com.hazelcast.map.impl.operation.PartitionWideEntryWithPredicateOperationFactory;
@@ -31,10 +31,10 @@ import com.hazelcast.query.Predicate;
 import com.hazelcast.security.permission.ActionConstants;
 import com.hazelcast.security.permission.MapPermission;
 import com.hazelcast.spi.OperationFactory;
-
 import java.io.IOException;
 import java.security.Permission;
 import java.util.Map;
+import java.util.Set;
 
 public class MapExecuteWithPredicateRequest extends AllPartitionsClientRequest {
     private String name;
@@ -57,11 +57,12 @@ public class MapExecuteWithPredicateRequest extends AllPartitionsClientRequest {
 
     @Override
     protected Object reduce(Map<Integer, Object> map) {
-        MapEntries result = new MapEntries();
+        MapEntrySet result = new MapEntrySet();
         MapService mapService = getService();
         for (Object o : map.values()) {
             if (o != null) {
-                MapEntries entries = (MapEntries) mapService.getMapServiceContext().toObject(o);
+                MapEntrySet entrySet = (MapEntrySet) mapService.getMapServiceContext().toObject(o);
+                Set<Map.Entry<Data, Data>> entries = entrySet.getEntrySet();
                 for (Map.Entry<Data, Data> entry : entries) {
                     result.add(entry);
                 }

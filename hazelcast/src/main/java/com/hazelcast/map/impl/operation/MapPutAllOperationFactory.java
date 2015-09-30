@@ -16,7 +16,7 @@
 
 package com.hazelcast.map.impl.operation;
 
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.map.impl.MapService;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
@@ -27,19 +27,19 @@ import java.io.IOException;
 public class MapPutAllOperationFactory implements OperationFactory {
 
     private String name;
-    private MapEntries entries = new MapEntries();
+    private MapEntrySet entrySet = new MapEntrySet();
 
     public MapPutAllOperationFactory() {
     }
 
-    public MapPutAllOperationFactory(String name, MapEntries entries) {
+    public MapPutAllOperationFactory(String name, MapEntrySet entrySet) {
         this.name = name;
-        this.entries = entries;
+        this.entrySet = entrySet;
     }
 
     @Override
     public Operation createOperation() {
-        PutAllOperation putAllOperation = new PutAllOperation(name, entries);
+        PutAllOperation putAllOperation = new PutAllOperation(name, entrySet);
         putAllOperation.setServiceName(MapService.SERVICE_NAME);
         return putAllOperation;
     }
@@ -47,12 +47,12 @@ public class MapPutAllOperationFactory implements OperationFactory {
     @Override
     public void writeData(ObjectDataOutput out) throws IOException {
         out.writeUTF(name);
-        out.writeObject(entries);
+        out.writeObject(entrySet);
     }
 
     @Override
     public void readData(ObjectDataInput in) throws IOException {
         name = in.readUTF();
-        entries = in.readObject();
+        entrySet = in.readObject();
     }
 }

@@ -23,7 +23,7 @@ import com.hazelcast.core.EntryView;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.map.impl.EntryViews;
 import com.hazelcast.map.impl.MapContainer;
-import com.hazelcast.map.impl.MapEntries;
+import com.hazelcast.map.impl.MapEntrySet;
 import com.hazelcast.map.impl.MapKeyLoader;
 import com.hazelcast.map.impl.MapService;
 import com.hazelcast.map.impl.MapServiceContext;
@@ -670,27 +670,27 @@ public class DefaultRecordStore extends AbstractEvictableRecordStore implements 
     }
 
     @Override
-    public MapEntries getAll(Set<Data> keys) {
+    public MapEntrySet getAll(Set<Data> keys) {
         checkIfLoaded();
         final long now = getNow();
 
-        final MapEntries mapEntries = new MapEntries();
+        final MapEntrySet mapEntrySet = new MapEntrySet();
 
         final Iterator<Data> iterator = keys.iterator();
         while (iterator.hasNext()) {
             final Data key = iterator.next();
             final Record record = getRecordOrNull(key, now, false);
             if (record != null) {
-                addMapEntrySet(record.getKey(), record.getValue(), mapEntries);
+                addMapEntrySet(record.getKey(), record.getValue(), mapEntrySet);
                 accessRecord(record);
                 iterator.remove();
             }
         }
 
         Map loadedEntries = loadEntries(keys);
-        addMapEntrySet(loadedEntries, mapEntries);
+        addMapEntrySet(loadedEntries, mapEntrySet);
 
-        return mapEntries;
+        return mapEntrySet;
     }
 
     private Map loadEntries(Set<Data> keys) {
@@ -707,20 +707,20 @@ public class DefaultRecordStore extends AbstractEvictableRecordStore implements 
         return loadedEntries;
     }
 
-    private void addMapEntrySet(Object key, Object value, MapEntries mapEntries) {
+    private void addMapEntrySet(Object key, Object value, MapEntrySet mapEntrySet) {
         if (key == null || value == null) {
             return;
         }
         value = mapServiceContext.interceptGet(name, value);
         final Data dataKey = mapServiceContext.toData(key);
         final Data dataValue = mapServiceContext.toData(value);
-        mapEntries.add(dataKey, dataValue);
+        mapEntrySet.add(dataKey, dataValue);
     }
 
 
-    private void addMapEntrySet(Map<Object, Object> entries, MapEntries mapEntries) {
+    private void addMapEntrySet(Map<Object, Object> entries, MapEntrySet mapEntrySet) {
         for (Map.Entry<Object, Object> entry : entries.entrySet()) {
-            addMapEntrySet(entry.getKey(), entry.getValue(), mapEntries);
+            addMapEntrySet(entry.getKey(), entry.getValue(), mapEntrySet);
         }
     }
 
