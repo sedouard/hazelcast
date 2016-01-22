@@ -39,6 +39,7 @@
         <module>hazelcast-build-utils</module>
         <module>hazelcast-code-generator</module>
         <module>hazelcast-jclouds</module>
+        <module>hazelcast-azure</module>
     </modules>
 
     <properties>
